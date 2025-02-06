@@ -1,0 +1,111 @@
+#root {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+#map-container {
+  height: 100%;
+  width: 100%;
+  /* temporarily set the background color so we can tell where the map container is positioned */
+  background-color: lightgrey;
+}
+
+.marker {
+  /* background-image: url('https://png.pngtree.com/png-clipart/20220909/original/pngtree-brazil-country-map-pin-icon-realistic-png-image_8523375.png'); */
+  background-image: url('https://png.pngtree.com/png-clipart/20190614/original/pngtree-book-line-black-icon.-png-image_3746347.jpg');
+  
+  background-size: cover;
+  width: 40px;
+  height: 40px;
+  /* border: 2px solid white; */
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.text-marker {
+  /* background-image: url('https://png.pngtree.com/png-clipart/20220909/original/pngtree-brazil-country-map-pin-icon-realistic-png-image_8523375.png'); */
+  background-image: url('https://png.pngtree.com/png-clipart/20190614/original/pngtree-book-line-black-icon.-png-image_3746347.jpg');
+  
+  background-size: cover;
+  width: 40px;
+  height: 40px;
+  /* border: 2px solid white; */
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.video-marker {
+  background-image: url('https://i.pinimg.com/564x/96/f4/29/96f429ea8336146cb2f729eb5a8511c8.jpg');
+
+  background-size: cover;
+  width: 40px;
+  height: 40px;
+  /* border: 2px solid white; */
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.person-marker {
+  background-image: url('https://t4.ftcdn.net/jpg/00/65/77/27/360_F_65772719_A1UV5kLi5nCEWI0BNLLiFaBPEkUbv5Fv.jpg');
+  
+  background-size: cover;
+  width: 40px;
+  height: 40px;
+  /* border: 2px solid white; */
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+
+.marker:hover {
+  background-color: #2a8cc3;
+  border-color: #e0e0e0;
+  transform: scale(1.1);
+}
+
+.mapboxgl-popup {
+  max-width: 400px;
+}
+
+.mapboxgl-popup-content {
+  text-align: center;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.sidebar {
+  background-color: rgb(35 55 75 / 90%);
+  color: #fff;
+  padding: 6px 12px;
+  font-family: monospace;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 12px;
+  border-radius: 4px;
+}
+
+.reset-button {
+  position: absolute;
+  top: 50px;
+  z-index: 1;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.popup-form {
+  position: fixed;
+  top: 7%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(167, 163, 163);
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
