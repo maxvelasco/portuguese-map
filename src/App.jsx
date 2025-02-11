@@ -83,180 +83,6 @@ function createPopupObject({
 }
 
 
-
-
-// function new_togglePopup(map, coordinates, markerInstance) {
-//   const coordinatesKey = coordinates.join(',');
-//   const group = markerGroups[coordinatesKey];
-
-//   if (!group || group.length === 0) return;
-
-//   setActiveMarkerGroup(group); // Set the current marker group
-//   setActivePopupIndex(0); // Reset to the first popup in the group
-
-//   // Close any existing popup
-//   if (popupInstance) {
-//     popupInstance.remove();
-//     setPopupInstance(null);
-//   }
-// }
-
-// useEffect(() => {
-//   if (!activeMarkerGroup || activeMarkerGroup.length === 0) return;
-
-//   const markerData = activeMarkerGroup[activePopupIndex];
-
-//   // Create a new popup instance
-//   const newPopupInstance = new mapboxgl.Popup({ offset: 25, closeOnClick: false })
-//     .setLngLat(markerData.coordinates)
-//     .setHTML(`
-//       <h3>${markerData.title}</h3>
-//       <p>${markerData.description}</p>
-//       ${markerData.url ? markerData.url : ''}
-//       <div>
-//         <button id="prev-popup">Previous</button>
-//         <button id="next-popup">Next</button>
-//       </div>
-//     `)
-//     // .addTo(map);
-
-//   currentMarkerInstance.setPopup(newPopupInstance);
-
-//   // Attach event listeners for navigation
-//   newPopupInstance.on('open', () => {
-//     const nextButton = document.getElementById('next-popup');
-//     const prevButton = document.getElementById('prev-popup');
-
-//     if (nextButton) {
-//       nextButton.addEventListener('click', () => {
-//         setActivePopupIndex((prevIndex) => (prevIndex + 1) % activeMarkerGroup.length);
-//       });
-//     }
-
-//     if (prevButton) {
-//       prevButton.addEventListener('click', () => {
-//         setActivePopupIndex((prevIndex) => (prevIndex - 1 + activeMarkerGroup.length) % activeMarkerGroup.length);
-//       });
-//     }
-//   });
-
-//   // Clean up the previous popup
-//   return () => {
-//     if (popupInstance) {
-//       popupInstance.remove();
-//     }
-//     setPopupInstance(newPopupInstance);
-//   };
-// }, [activePopupIndex, activeMarkerGroup]);
-
-
-// function useTogglePopup(map, coordinatesKey, markerInstance) {
-//   const [activePopupIndex, setActivePopupIndex] = useState(0);
-//   const [popupInstance, setPopupInstance] = useState(null);
-
-//   const group = markerGroups[coordinatesKey];
-
-//   useEffect(() => {
-//     if (!group || group.length === 0) return;
-
-//     const markerData = group[activePopupIndex];
-
-//     // Create or update the popup instance
-//     const newPopupInstance = new mapboxgl.Popup({ offset: 25, closeOnClick: false })
-//       .setLngLat(markerData.coordinates)
-//       .setHTML(`
-//         <h3>${markerData.title}</h3>
-//         <p>${markerData.description}</p>
-//         ${markerData.url ? markerData.url : ''}
-//         <div>
-//           <button id="prev-popup">Previous</button>
-//           <button id="next-popup">Next</button>
-//         </div>
-//       `)
-//       // .addTo(map);
-
-//     currentMarkerInstance.setPopup(newPopupInstance);
-
-//     // Attach event listeners for navigation
-//     newPopupInstance.on('open', () => {
-//       const nextButton = document.getElementById('next-popup');
-//       const prevButton = document.getElementById('prev-popup');
-
-//       if (nextButton) {
-//         nextButton.addEventListener('click', () => {
-//           setActivePopupIndex((prevIndex) => (prevIndex + 1) % group.length);
-//         });
-//       }
-
-//       if (prevButton) {
-//         prevButton.addEventListener('click', () => {
-//           setActivePopupIndex((prevIndex) => (prevIndex - 1 + group.length) % group.length);
-//         });
-//       }
-//       // );
-//     });
-
-//     // Cleanup previous popup
-//     if (popupInstance) {
-//       popupInstance.remove();
-//     }
-
-//     // Update the current popup instance
-//     setPopupInstance(newPopupInstance);
-
-//     // Cleanup function to remove listeners and popup
-//     return () => {
-//       if (popupInstance) {
-//         popupInstance.remove();
-//       }
-//     };
-//   }, [activePopupIndex, group]); // Re-run when index or group changes
-
-//   return { setActivePopupIndex };
-// }
-
-// function attachButtonListeners(group, currentPopupIndex) {
-//   const nextButton = document.getElementById('next-popup');
-//   const prevButton = document.getElementById('prev-popup'); 
-// }
-
-// function updatePopupContent(markerInstance, markerGroup) {
-//   const markerData = markerGroup[currentPopupIndex];
-
-//   // Create a container for the popup content
-//   const popupContainer = document.createElement('div');
-
-//   // Add static content to the popup
-//   const title = document.createElement('h3');
-//   title.textContent = markerData.title;
-
-//   const description = document.createElement('p');
-//   description.textContent = markerData.description;
-
-//   // Add optional URL if available
-//   if (markerData.url) {
-//     const urlElement = document.createElement('a');
-//     urlElement.href = markerData.url;
-//     urlElement.textContent = 'View more';
-//     urlElement.target = '_blank';
-//     popupContainer.appendChild(urlElement);
-//   }
-
-//   // Append title and description to the container
-//   popupContainer.appendChild(title);
-//   popupContainer.appendChild(description);
-
-//   // Append the pre-defined buttons
-//   const buttonContainer = document.createElement('div');
-//   buttonContainer.appendChild(prevButton);
-//   buttonContainer.appendChild(nextButton);
-//   popupContainer.appendChild(buttonContainer);
-
-//   // Update the popup content using setDOMContent
-//   const popupInstance = markerInstance.getPopup();
-//   popupInstance.setDOMContent(popupContainer);
-// }
-
 function new_togglePopup(map, coordinates, markerInstance, direction = 1) {
   let currentPopupIndex = 0;
   const coordinatesKey = coordinates.join(',');
@@ -535,30 +361,15 @@ const addMarkerWithPopupObject = (map, popup, markerType) => {
   });
 
 
-  // if (!isSaved) {
   // Save to localStorage
   let markers = JSON.parse(localStorage.getItem('markers')) || [];
-  // const markerData = [popup.coordinates, popup.title, popup.description];
-  // markers.push({ coordinates, title, description });
   const markerCoords = popup.coordinates;
   const markerTitle = popup.title;
   const markerDescription = popup.description;
 
   markers.push({ markerCoords, markerTitle, markerDescription });
-  localStorage.setItem('markers', JSON.stringify(markers));
-  // }
-  
+  localStorage.setItem('markers', JSON.stringify(markers));  
 };
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -593,123 +404,6 @@ const addMarkerWithPopup = (map, coordinates, title, description, markerType, is
     localStorage.setItem('markers', JSON.stringify(markers));
   }
   
-};
-
-const addLineConnection = (map, coordinatesArray) => {
-  const lineSource = {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: coordinatesArray
-          },
-          properties: {}
-        }
-      ]
-    }
-  };
-
-  const lineLayerId = `route-${Math.random()}`; // TODO: make lineLayerId based on
-  const solidLineLayerId = `route-${Math.random()}`;
-  const dashedLineLayerId = `route-${Math.random()}`;
-  
-  map.addSource(lineLayerId, lineSource);
-  map.addLayer({
-    id: solidLineLayerId,
-    type: 'line',
-    source: lineLayerId,
-    layout: {
-      'line-join': 'round',
-      'line-cap': 'round'
-    },
-    paint: {
-      'line-color': 'green',
-      'line-width': 6,
-      'line-opacity': 0.4
-    }
-  });
-
-  map.addLayer({
-    type: 'line',
-    source: lineLayerId,
-    id: dashedLineLayerId,
-    paint: {
-      'line-color': 'yellow',
-      'line-width': 2,
-      'line-dasharray': [0, 4, 3],
-      'line-opacity': 0.9
-    }
-  });
-
-
-  // Add click event listener for popups
-  map.on('click', solidLineLayerId, (e) => {
-    console.log(`${e.features}, ${e.features.length}, ${Object.entries(e.features[0])}`);
-    if (e.features && e.features.length > 0 && e.features[0]) {
-      console.log("adding connection popup");
-      const coordinates = e.lngLat;
-      const { title, description } = e.features[0].properties;
-
-      console.log(`adding popup for connection: ${title}`);
-      new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(`<h3>${title}</h3><p>${description}</p>`)
-        .addTo(map);
-      } else {
-        console.log("not adding connection");
-      }
-    // linePopup.setLngLat(e.lngLat).addTo(map);
-  });
-
-  // Change cursor style on hover
-  map.on('mouseenter', solidLineLayerId, () => {
-    map.getCanvas().style.cursor = 'pointer';
-  });
-  map.on('mouseleave', solidLineLayerId, () => {
-    map.getCanvas().style.cursor = '';
-  });
-
-  const dashArraySequence = [
-    [0, 4, 3],
-    [0.5, 4, 2.5],
-    [1, 4, 2],
-    [1.5, 4, 1.5],
-    [2, 4, 1],
-    [2.5, 4, 0.5],
-    [3, 4, 0],
-    [0, 0.5, 3, 3.5],
-    [0, 1, 3, 3],
-    [0, 1.5, 3, 2.5],
-    [0, 2, 3, 2],
-    [0, 2.5, 3, 1.5],
-    [0, 3, 3, 1],
-    [0, 3.5, 3, 0.5]
-  ];
-
-  let step = 0;
-
-  function animateDashArray(timestamp) {
-    const newStep = parseInt((timestamp / 50) % dashArraySequence.length);
-
-    if (newStep !== step) {
-      map.setPaintProperty(
-        // 'line-dashed',
-        dashedLineLayerId,
-        'line-dasharray',
-        dashArraySequence[step]
-      );
-      step = newStep;
-    }
-
-    requestAnimationFrame(animateDashArray);
-  }
-
-  animateDashArray(0);
-
 };
 
 
@@ -763,8 +457,6 @@ const addLineConnectionWithPopup = (map, coordinatesArray, popup) => {
     }
   });
 
-  // const linePopup = createPopupObject({ title: title, description: description, coordinates: coordinates });
-  // new mapboxgl.Popup()
   const linePopup = new mapboxgl.Popup({ offset: 25 })
     .setHTML(`
       <h3>${popup.title}</h3>
@@ -772,53 +464,10 @@ const addLineConnectionWithPopup = (map, coordinatesArray, popup) => {
       ${popup.url ? `<p>${popup.url}</p>` : ""}`
     );
 
-    // `<iframe src="${url}" width="100%" height="200" frameborder="0"></iframe>`
-
   const PIXEL_THRESHOLD = 20;
   map.on('click', solidLineLayerId, (e) => {
     linePopup.setLngLat(e.lngLat).addTo(map);
   });
-
-  // Add click event listener for popups
-  // map.on('click', solidLineLayerId, (e) => {
-  //   // console.log(`setting LngLat to ${e.lngLat} for popup: ${popup.title}`);
-  //   const clickCoords = map.project(e.lngLat);
-  //   // console.log(`setting pixel location to ${Object.entries(clickCoords)} for popup: ${popup.title}`);
-
-  //   const markers = JSON.parse(localStorage.getItem('markers')) || [];
-  //   // console.log(`markers[0]: ${Object.entries(markers[0])}`)
-  //   const isFarEnough = markers.every(( { markerCoords, markerTitle, markerDescription } ) => {
-  //     console.log(`markerCoords: ${markerCoords}, markerPixel: ${Object.entries(map.project(markerCoords))}`);
-  //     // const markerPixel = map.project(markerCoords);
-  //     if (!(markerCoords && markerCoords.length > 0 && markerCoords[0])) {
-  //       return false;
-  //     }
-
-  //     const markerPixel = map.project([markerCoords[0], markerCoords[1]]);
-  //     // console.log(`clickCoords: ${Object.entries(clickCoords)}, markerPixel: ${Object.entries(markerPixel)}`);
-  //     // console.log(`dx, manually: ${clickCoords.x} - ${markerPixel.x} = ${clickCoords.x - markerPixel.x}`);
-  //     // const dx = clickCoords.x - markerCoords.x;
-  //     // const dy = clickCoords.y - markerCoords.y;
-  //     const dx = clickCoords.x - markerPixel.x;
-  //     const dy = clickCoords.y - markerPixel.y;
-
-  //     // console.log(`markerPixel.x: ${markerPixel.x} --> dx = ${dx}, dy = ${dy}`);
-
-  //     const distance = Math.sqrt(dx * dx + dy * dy);
-  //     console.log(`distance: ${distance}`);
-  //     return distance > PIXEL_THRESHOLD;
-  //   });
-
-  //   console.log("isFarEnough: " + isFarEnough);
-
-  //   // linePopup.setLngLat(e.lngLat).addTo(map);
-  //   if (isFarEnough) {
-  //     console.log(`Setting LngLat to ${e.lngLat} for popup: ${popupContent}`);
-  //     linePopup.setLngLat(e.lngLat).addTo(map);
-  //   } else {
-  //     console.log("Click is too close to a marker. Not showing line popup.");
-  //   }
-  // });
   
 
   // Change cursor style on hover
@@ -878,14 +527,6 @@ function loadMarkers(map) {
     if (!(title === "Rio de Janiero" && coordinates !== location_coords.rio)) {
       addMarkerWithPopup(map, coordinates, title, description, "OTHER", true); // set isSaved to true, so it doesn't add a new marker to storage
     }
-
-    // addMarkerWithPopup(map, coordinates, title, description, true); // set isSaved to true, so it doesn't add a new marker to storage
-      // new mapboxgl.Marker()
-      //     .setLngLat(coordinates)
-      //     .setPopup(new mapboxgl.Popup().setText(`${title}\n${description}`))
-      //     .addTo(map);
-
-
   });
 }
 
@@ -893,15 +534,14 @@ function clearAllMarkers() {
   localStorage.setItem('markers', JSON.stringify([]));
 }
 
-
+// function used to manually make the calls to draw the markers + connections
+// TODO: automate this by allowing users to add, edit, and remove markers and/or connections
 function addAlineMottaCollection(map) {
 
   const markerPopup0 = createPopupObject({ title: "Aline Motta", locationName: "Niterói, RJ", description: "Aline Motta nasceu em Niterói, RJ", coordinates: location_coords.niteroi, url: "https://player.vimeo.com/video/486936176" });
-  // const markerPopup1 = createPopupObject({ title: })
   const markerPopup1 = createPopupObject({ title: '"Pontes Sobre Abismos" (2017) de Aline Motta', description: 'Aline Motta viajou para o Rio de Janeiro para produzir o filme “Pontes Sobre Abismos”', coordinates: location_coords.rio, url: "https://player.vimeo.com/video/486936176"});
   const markerPopup2 = createPopupObject({ title: '"Pontes Sobre Abismos" (2017) de Aline Motta', description: 'Aline Motta viajou para Minas Gerais para produzir o filme “Pontes Sobre Abismos”', coordinates: location_coords.minas_gerais, url: "https://player.vimeo.com/video/486936176"});
   const markerPopup3 = createPopupObject({ title: '"Pontes Sobre Abismos" (2017) de Aline Motta', description: 'Aline Motta viajou para Portugal para produzir o filme “Pontes Sobre Abismos”', coordinates: location_coords.portugal, url: "https://player.vimeo.com/video/486936176"});
-  
   const markerPopup4 = createPopupObject({ title: '"Pontes Sobre Abismos" (2017) de Aline Motta', description: 'Aline Motta viajou para Serra Leoa para produzir o filme “Pontes Sobre Abismos”', coordinates: location_coords.serra_leoa, url: "https://player.vimeo.com/video/486936176"});
   const markerPopup5 = createPopupObject({ title: 'A lenda da On\u00E7a pintada', description: 'As origens da lenda do leopardo e do fogo são dos povos indígenas brasileiros. O Cristino Wapichana é a pessoa que é mais associada com esse conto, e ele é do estado de Roraima.', coordinates: location_coords.roraima, url: "https://www.youtube.com/embed/Mi1q3mVRhHk"});
   
@@ -911,13 +551,6 @@ function addAlineMottaCollection(map) {
   addMarkerWithPopupObject(map, markerPopup3, MARKER_TYPES.video);
   addMarkerWithPopupObject(map, markerPopup4, MARKER_TYPES.video);
   addMarkerWithPopupObject(map, markerPopup5, MARKER_TYPES.text);
-
-  // addMarkerWithPopup(map, location_coords.niteroi, 'Niterói, RJ', 'A cidade onde Aline Motta nasceu.', MARKER_TYPES.person, false);
-  // addMarkerWithPopup(map, location_coords.rio, 'Rio de Janeiro, RJ', 'Aline Motta viajou para o Rio de Janeiro para produzir o filme “Pontes Sobre Abismos”', MARKER_TYPES.video, false);
-  // addMarkerWithPopup(map, location_coords.minas_gerais, 'Minais Gerais, MG', 'Aline Motta viajou para Minas Gerais para produzir o filme “Pontes Sobre Abismos”', MARKER_TYPES.video, false);
-  // addMarkerWithPopup(map, location_coords.portugal, 'Portugal', 'Aline Motta viajou para Portugal para produzir o filme “Pontes Sobre Abismos”', MARKER_TYPES.video, false);
-  // addMarkerWithPopup(map, location_coords.serra_leoa, 'Serra Leoa', 'Aline Motta viajou para Serra Leoa para produzir o filme “Pontes Sobre Abismos”', MARKER_TYPES.video, false);
-  // addMarkerWithPopup(map, location_coords.roraima, 'Roraima, RR', 'As origens da lenda do leopardo e do fogo são dos povos indígenas brasileiros. O Cristino Wapichana é a pessoa que é mais associada com esse conto, e ele é do estado de Roraima.', MARKER_TYPES.person, false);
 
   const popup1 = createPopupObject({ title: '"Pontes Sobre Abismos" (2017) de Aline Motta', description: 'Aline Motta viajou para o Rio de Janeiro para produzir o filme “Pontes Sobre Abismos”' })
   const popup2 = createPopupObject({ title: '"Pontes Sobre Abismos" (2017) de Aline Motta', description: 'Aline Motta viajou para Minas Gerais para produzir o filme “Pontes Sobre Abismos”' })
@@ -978,21 +611,12 @@ function addAlineMottaCollection(map) {
   addMarkerWithPopupObject(map, markerPopup21, MARKER_TYPES.video);
 
 
-  // me, misc
   const markerPopup27 = createPopupObject({ title: "Sítio Soares", description: "Foi a lugar do 20° Congresso da União Nacional dos Estudantes (UNE), onde a polícia paulista prende Vladimir Palmeira e mais 1239", coordinates: location_coords.ibiuna });
   const popup27 = createPopupObject({ title: '“Que bom te ver viva” de Lúcia Murat', description: 'Sítio Soares em Ibiúna, São Paulo foi uma das demonstra\u00E7ões mencionadas no filme “Que bom te ver viva” de Lúcia Murat'});
   addMarkerWithPopupObject(map, markerPopup27, MARKER_TYPES.video); // TODO: add event marker type
   addLineConnectionWithPopup(map, [location_coords.rio, location_coords.ibiuna], popup27);
 
-  // NoirBLUE de Ana Pi
-    // Petrolândia, Pernambuco foi um bairro da sua infância
-    // Granja Verde, Minas Gerais foi um bairro da sua infância 
-    // A beira do Rio Níger (WHERE??): Ana Pi gravou o filme "NoirBLUE" na beira do Rio Níger
 
-    // Connection to: "Que Bom te Ver Viva" + "Pontes Sobre Abismos"
-      // Os filmes "Que Bom te Ver Viva" de Lúcia Murat, "Pontes Sobre Abismos" de Aline Motta, e "NoirBLUE" de Ana pi tratam da autonomia sobre o próprio corpo e sobre o direito a cantar sua própria história. 
-
-  // CONNECTIONS
   const popup7_8 = createPopupObject({ title: "Memória e resistência das mulheres na luta contra a ditadura no Brasil", description: 'Os filmes "Diário de uma busca" e "Que bom te ver viva" estão unidos pelo foco comum na história sombria do Brasil e no impacto da ditadura militar na memória pessoal e coletiva. Ambos exploram as experiências de militância, prisão e ativismo, com ênfase especial nas mulheres. Que Bom Te Ver Viva, de Lúcia Murat, destaca mulheres que resistiram e suportaram torturas, enquanto Diário de Uma Busca, de Flávia Castro, retrata a resiliência de mulheres lidando com a perda e perguntas sem resposta depois perderem a família para a resistência.' })
   addLineConnectionWithPopup(map, [location_coords.porto_alegre, location_coords.rio], popup7_8);
 
@@ -1006,16 +630,8 @@ function addAlineMottaCollection(map) {
   addLineConnectionWithPopup(map, [location_coords.paris, location_coords.lisbon], popup16_17);
   
   const popup19_20_21 = createPopupObject({ title: 'A questão de gênero em diferentes perspectivas', description: 'Os filmes "Bixa Travesty," "Divinas Divas" e "Machimbrao" se conectam com a questão de gênero, explorando temas também similares sobre privilégio, segurança e beleza. Cada filme traz as expectativas sociais ou das suas próprias comunidades. Em Machimbrao, filmado em Cuba, as pessoas que frequentam a barbearia, sobretudo homens, reforçam, na entrevista com a diretora, suas expectativas da heteronormatividade, enquanto que em Bixa Travesty e Divinas Divas questiona-se o que se entende por identidade.' });
-  // const popup20_21 = createPopupObject({  });
   addLineConnectionWithPopup(map, [location_coords.rio, location_coords.havana], popup19_20_21);
   addLineConnectionWithPopup(map, [location_coords.havana, location_coords.sao_paulo], popup19_20_21);
-
-  // "Divinas Divas"
-  // "Machimbrão"
-  // "Bixa Travesty"
-
-
-  // const popup23_24 = createPopupObject({  });
 }
 
 
@@ -1029,7 +645,6 @@ function App() {
   const [description, setDescription] = useState(''); // Stores marker description input
 
 
-  // useEffect block: runs once when the component is first mounted
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1IjoibWF4dmVsYXNjbyIsImEiOiJjbTI5ZzUzcTAwNHo0Mm9wcnBrZXRreTZmIn0.O_6ddjd2A8QEY4eFFuWvAQ'
     
@@ -1144,7 +759,6 @@ function App() {
       const { center, place_name } = e.result;
       setSelectedLocation(center);
       setTitle(place_name);
-      // addMarkerWithPopup(mapRef.current, center, place_name, 'Custom location from search');
     });
     
 
@@ -1178,15 +792,6 @@ function App() {
   return (
     <>
       <div id='map-container' ref={mapContainerRef}/>
-      {/* return <div ref={mapContainerRef} style={{ height: '100%' }}></div>; */}
-
-      {/* <button 
-        onClick={handleAddToMapClick} 
-        disabled={!selectedLocation} 
-        style={{ display: 'block', position: 'absolute', top: '2%', right: '18%', zIndex: 1000, height: '30px', width: '100px', color: 'black'}}
-      >
-        Add to Map
-      </button> */}
 
       {showForm && (
         <div className="popup-form">
@@ -1227,44 +832,6 @@ function App() {
 
     </>
   )
-
-  // return (
-  //   <div>
-  //     <div id='map-container' ref={mapContainerRef} />
-
-  //     {/* Add to Map button, enabled only when a location is selected */}
-  //     <button onClick={handleAddToMapClick} disabled={!selectedLocation}>
-  //       Add to Map
-  //     </button>
-
-  //     {/* Pop-up form for adding marker details */}
-  //     {showForm && (
-  //       <div className="popup-form">
-  //         <form onSubmit={handleFormSubmit}>
-  //           <label>
-  //             Title:
-  //             <input
-  //               type="text"
-  //               value={title}
-  //               onChange={(e) => setTitle(e.target.value)}
-  //               required
-  //             />
-  //           </label>
-  //           <label>
-  //             Description:
-  //             <textarea
-  //               value={description}
-  //               onChange={(e) => setDescription(e.target.value)}
-  //               required
-  //             />
-  //           </label>
-  //           <button type="submit">Submit</button>
-  //         </form>
-  //       </div>
-  //     )}
-  //   </div>
-  // );
-
 }
 
 export default App
