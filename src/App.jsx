@@ -168,154 +168,6 @@ function new_togglePopup(map, coordinates, markerInstance, direction = 1) {
   });
 }
 
-
-
-function togglePopup(map, coordinates, markerInstance, direction = 1) {
-  console.log("TOGGLING POPUP");
-  let currentPopupIndex = 0;
-
-  const coordinatesKey = coordinates.join(',');
-  const group = markerGroups[coordinatesKey];
-
-  if (!group || group.length === 0) return;
-
-  // Initialize the index for this group if it doesn't exist
-  if (!currentIndexes[coordinatesKey]) {
-    currentIndexes[coordinatesKey] = 0;
-  }
-
-  // Get the next popup in the group
-  const currentIndex = currentIndexes[coordinatesKey];
-  // const nextIndex = (currentIndex + 1) % group.length;
-  const nextIndex = (currentIndex + direction + group.length) % group.length; // Wrap around
-  
-  console.log("currentIndex: " + currentIndex + ", nextIndex: " + nextIndex);
-  currentIndexes[coordinatesKey] = currentIndex; // was prev nextIndex
-
-  const popup = group[currentIndex]; // was prev nextIndex
-  console.log("GROUP CONTENTS: " + Object.entries(group));
-  console.log("group[0]: " + Object.entries(group[0]));
-  // console.log("group[1]: " + Object.entries(group[1]));
-
-  console.log("popup title: " + popup.title);
-
-  const popupInstance = new mapboxgl.Popup({ offset: 25, closeOnClick: false })
-    .setLngLat(coordinates)
-    .setHTML(`
-      <h3>${popup.title}</h3>
-      <p>${popup.description}</p>
-      ${popup.url ? popup.url : ''}
-      <div>
-        <button id="prev-popup">Previous</button>
-        <button id="next-popup">Next</button>
-      </div>
-    `)
-
-  // TODO: if current == next: setHTML to not include buttons
-
-  popupGroups[coordinatesKey].push(popupInstance);
-
-  if (currentIndex !== 0) {
-    console.log("not first!");
-    // markerInstance.setPopup(popupInstance);
-    console.log("current popup: " + Object.entries(markerInstance.getPopup()));
-  }
-
-  // Attach event listeners after the popup is added to the DOM
-  popupInstance.on('open', () => {
-    if (currentIndex === nextIndex) {
-      return;
-    }
-
-    const nextButton = document.getElementById('next-popup');
-    const prevButton = document.getElementById('prev-popup');
-
-    if (nextButton) {
-      document.getElementById('next-popup').addEventListener('click', () => {
-        console.log("next clicked");
-        // markerInstance.getPopup().remove();
-        // markerInstance.setPopup(null);
-        let prevIndex = currentPopupIndex;
-        currentPopupIndex = (prevIndex + 1 + group.length) % group.length;
-
-        console.log("PrevIndex: " + prevIndex + ", new: " + currentPopupIndex);
-
-        const newPopup = group[currentPopupIndex];
-        console.log("next popup: " + Object.entries(newPopup));
-
-        const newPopupInstance = markerInstance.getPopup().setHTML(`
-          <h3>${newPopup.title}</h3>
-          <p>${newPopup.description}</p>
-          ${newPopup.url ? newPopup.url : ''}
-          <div>
-            <button id="prev-popup">Previous</button>
-            <button id="next-popup">Next</button>
-          </div>
-        `);
-
-        console.log("nextButton: " + nextButton);
-
-        // togglePopup(map, coordinates, markerInstance, 1); // Navigate forward
-
-        // setActivePopupIndex((prevIndex) => (prevIndex + 1) % group.length);
-
-      });
-    }
-
-    if (prevButton) {
-      prevButton.addEventListener('click', () => {
-        let prevIndex = currentPopupIndex;
-        currentPopupIndex = (prevIndex - 1 + group.length) % group.length;
-
-        console.log("PrevIndex: " + prevIndex + ", new: " + currentPopupIndex);
-
-        const newPopup = group[currentPopupIndex];
-        // console.log("prev popup: " + Object.entries(newPopup));
-
-        const newPopupInstance = markerInstance.getPopup().setHTML(`
-          <h3>${newPopup.title}</h3>
-          <p>${newPopup.description}</p>
-          ${newPopup.url ? newPopup.url : ''}
-          <div>
-            <button id="prev-popup">Previous</button>
-            <button id="next-popup">Next</button>
-          </div>
-        `);
-
-        console.log("new popup: " + Object.entries(newPopupInstance));
-
-        // markerInstance.setPopup(newPopupInstance);
-        // setHTML()
-
-
-
-        // markerInstance.getPopup().remove();
-        // togglePopup(map, coordinates, markerInstance, -1); // Navigate backward
-
-        // setActivePopupIndex((prevIndex) => (prevIndex - 1 + group.length) % group.length);
-      });
-    }
-  });
-
-  markerInstance.setPopup(popupInstance);
-
-  // document.getElementById('next-popup').addEventListener('click', () => {
-  //   togglePopup(map, coordinates, markerInstance);
-  // });
-  
-  // document.getElementById('prev-popup').addEventListener('click', () => {
-  //   const currentIndex = currentIndexes[coordinatesKey];
-  //   const prevIndex = (currentIndex - 1 + group.length) % group.length; // Wrap around
-  //   currentIndexes[coordinatesKey] = prevIndex;
-  //   togglePopup(map, coordinates, markerInstance);
-  // });
-
-  popupInstance.on('close', () => {
-    console.log("popup closed: " + popup.title);
-    // markerInstance.setPopup(null);
-  });
-}
-
 const addMarkerWithPopupObject = (map, popup, markerType) => {
   const markerElement = document.createElement('div');
 
@@ -341,22 +193,9 @@ const addMarkerWithPopupObject = (map, popup, markerType) => {
 
   const markerInstance = new mapboxgl.Marker(markerElement, { draggable: false })
     .setLngLat(popup.coordinates)
-    // .setPopup(
-    //   new mapboxgl.Popup({ offset: 25 })
-    //     .setHTML(`
-    //       <h3>${popup.title}</h3>
-    //       <p>${popup.description}</p>
-    //       ${popup.url ? `<p>${popup.url}</p>` : ""}`
-    //     )
-    // )
     .addTo(map);
 
   markerElement.addEventListener('click', () => {
-    // togglePopup(map, popup.coordinates, markerInstance);
-    // setCurrentMarkerInstance(markerInstance);
-    // new_
-
-    // togglePopup(map, popup.coordinates, markerInstance);
     new_togglePopup(map, popup.coordinates, markerInstance);
   });
 
@@ -386,8 +225,6 @@ const addMarkerWithPopup = (map, coordinates, title, description, markerType, is
   } else if (markerType === MARKER_TYPES.text) {
     markerElement.className = 'text-marker';
   }
-
-  console.log("Adding marker for: ", title);
 
   new mapboxgl.Marker(markerElement, { draggable: false })
     .setLngLat(coordinates)
@@ -464,8 +301,7 @@ const addLineConnectionWithPopup = (map, coordinatesArray, popup) => {
       ${popup.url ? `<p>${popup.url}</p>` : ""}`
     );
 
-  const PIXEL_THRESHOLD = 20;
-  map.on('click', solidLineLayerId, (e) => {
+    map.on('click', solidLineLayerId, (e) => {
     linePopup.setLngLat(e.lngLat).addTo(map);
   });
   
@@ -503,7 +339,6 @@ const addLineConnectionWithPopup = (map, coordinatesArray, popup) => {
     if (newStep !== step) {
       if (map) {
         map.setPaintProperty(
-          // 'line-dashed',
           dashedLineLayerId,
           'line-dasharray',
           dashArraySequence[step]
@@ -565,18 +400,12 @@ function addAlineMottaCollection(map) {
   addLineConnectionWithPopup(map, [location_coords.niteroi, location_coords.roraima], popup5);
 
 
-
-  // EXTRA POINTS -- TODO: add urls
   // charlotte
   const markerPopup7 = createPopupObject({ title: '"Diário de uma busca" (2010) de Flávia Castro', description: 'A cidade onde nasceu Flávia Castro', coordinates: location_coords.porto_alegre, url: 'https://yale.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=187b9123-e6fe-4047-935d-b205010870be' });
   addMarkerWithPopupObject(map, markerPopup7, MARKER_TYPES.video);
 
   const markerPopup8 = createPopupObject({ title: '"Que bom te ver viva" de Lúcia Murat', description: 'A cidade onde nasceu Lúcia Murat', coordinates: location_coords.rio, url: 'https://yale.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=2dec8a4a-b5e9-4a86-ada6-b20200340cdc' }); // TODO: add url
   addMarkerWithPopupObject(map, markerPopup8, MARKER_TYPES.video);
-
-
-  // const markerPopup26 = createPopupObject({ title: '"Que bom te ver viva" de Lúcia Murat', description: '"Que Bom Te Ver Viva" destaca mulheres que resistiram e suportaram torturas', coordinates: location_coords.rio, url: '' }); // TODO: add url
-  // addMarkerWithPopupObject(map, markerPopup26, MARKER_TYPES.video);
 
   // alicia
   const markerPopup10 = createPopupObject({ title: '"FotogrÁFRICA" (2016), de Tila Chitunda', description: 'A cidade onde nasceu Tila Chitunda, filha de pais angolanos', coordinates: location_coords.olinda, url: 'https://player.vimeo.com/video/190026474'});
@@ -588,7 +417,6 @@ function addAlineMottaCollection(map) {
   const markerPopup13 = createPopupObject({ title: '"Trago Comigo" (2016), de Tata Amaral', description: 'A cidade onde nasceu Tata Amaral', coordinates: location_coords.sao_paulo, url: 'https://yale.hosted.panopto.com/Panopto/Pages/Viewer.aspx?id=a3b8a1b2-aee4-4714-a87c-b1ff00124103' });
   addMarkerWithPopupObject(map, markerPopup13, MARKER_TYPES.video);
 
-  // createPopupObject({  });
   const markerPopup14 = createPopupObject({ title: '36º Festival del Nuevo Cinema Latino-Americano de Havana, Cuba (2014)', description: 'A cidade onde o filme de Tata Amaral estreou', coordinates: location_coords.havana, url: ''});
   addMarkerWithPopupObject(map, markerPopup14, MARKER_TYPES.video);
 
