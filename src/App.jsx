@@ -2,15 +2,19 @@ import { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'; // used for Geocoding
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import * as XLSX from 'xlsx';
 
 import 'mapbox-gl/dist/mapbox-gl.css';
 import '@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css'; // Geocoding
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'; // Drawing
 import './App.css'
+import { readExcel, readExcelFromUrl } from "./utils/readExcel";
 
 const forbidden = {
   CEDILLA: 'ç',
 }
+
+const excelFileUrl = '/Users/maxvelasco/Desktop/PortugueseMapData.xlsx'
 
 // NOTE: to find the coordinate info for a location, see: https://labs.mapbox.com/location-helper/#3/40.78/-73.97
 const location_coords = {
@@ -182,7 +186,7 @@ const addMarkerWithPopupObject = (map, popup, markerType) => {
     markerElement.className = 'text-marker';
   }
 
-  console.log("Adding NEW marker for: ", popup.title);
+  // console.log("Adding NEW marker for: ", popup.title);
 
   const coordinatesKey = popup.coordinates.join(',');
   if (!markerGroups[coordinatesKey]) {
@@ -371,7 +375,7 @@ function clearAllMarkers() {
 
 // function used to manually make the calls to draw the markers + connections
 // TODO: automate this by allowing users to add, edit, and remove markers and/or connections
-function addAlineMottaCollection(map) {
+function addMap1Collection(map) {
 
   const markerPopup0 = createPopupObject({ title: "Aline Motta", locationName: "Niterói, RJ", description: "Aline Motta nasceu em Niterói, RJ", coordinates: location_coords.niteroi, url: "https://player.vimeo.com/video/486936176" });
   const markerPopup1 = createPopupObject({ title: '"Pontes Sobre Abismos" (2017) de Aline Motta', description: 'Aline Motta viajou para o Rio de Janeiro para produzir o filme “Pontes Sobre Abismos”', coordinates: location_coords.rio, url: "https://player.vimeo.com/video/486936176"});
@@ -464,13 +468,24 @@ function addAlineMottaCollection(map) {
 
 
 function App() {
-  const mapRef = useRef()  
-  const mapContainerRef = useRef()
+  const mapRef = useRef();  
+  const mapContainerRef = useRef();
+
+  // new 
+  const mapRefs = useRef({});
+  const mapContainers = useRef({});
+  const [showSidebar, setShowSidebar] = useState(false);
+  // const [maps, setMaps] = useState([{ id: "map-1", name: "Default Map" }]);
+  const [maps, setMaps] = useState([]);
+  const [activeMapId, setActiveMapId] = useState("map-1");
+  const [activeMapIdx, setActiveMapIdx] = useState(0); // Indexing the Excel sheet number
 
   const [selectedLocation, setSelectedLocation] = useState(null); // Stores selected location coordinates
   const [showForm, setShowForm] = useState(false); // Controls form visibility
   const [title, setTitle] = useState(''); // Stores marker title input
   const [description, setDescription] = useState(''); // Stores marker description input
+
+  const [excelData, setExcelData] = useState([]);
 
 
   useEffect(() => {
@@ -535,7 +550,7 @@ function App() {
       clearAllMarkers();
       
       // add collections
-      addAlineMottaCollection(mapRef.current);
+      addMap1Collection(mapRef.current);
       
 
     });
@@ -594,7 +609,74 @@ function App() {
     return () => {
       mapRef.current.remove()
     }
-  }, [])
+  }, [activeMapId]);
+
+  useEffect(() => {
+    const fetchAndParseExcel = async () => {
+      try {
+        const response = await fetch('src/data/PortugueseMapData.xlsx');
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        console.log('Content-Type:', response.headers.get('Content-Type'));
+        const arrayBuffer = await response.arrayBuffer();
+
+        // Read the file using xlsx
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        
+        // Assuming data is in the first sheet:
+        const sheetName = workbook.SheetNames[activeMapId]; // NOTE: use active map ID for this
+        const worksheet = workbook.Sheets[sheetName];
+
+        const numMapSheets = workbook.SheetNames.length;
+
+        let mapsTemp = [];
+        for (let i = 0; i < numMapSheets; i++) {
+          mapsTemp.push({ id: i, name: workbook.SheetNames[i] });
+        }
+        setMaps(mapsTemp);
+
+        console.log("sheet name: " + sheetName);
+
+        // Convert the sheet to JSON
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        console.log("JSON data: ", jsonData);
+
+        // v2
+        const jsonDataAsArray = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        console.log('Parsed Data as Array:', jsonDataAsArray);
+
+        // jsonData now is an array of objects with your columns as keys
+        setExcelData(jsonData);
+      } catch (error) {
+        console.error('Error reading Excel file:', error);
+      }
+    };
+
+    fetchAndParseExcel();
+  }, [activeMapId]);
+
+  // Function to add a new map instance
+  const createNewMap = () => {
+    const newMapId = maps.length + 1;
+    setMaps([...maps, { id: newMapId, name: `Map ${maps.length + 1}` }]);
+    // setActiveMapId(newMapId);
+
+
+    // TODO: add functionality to actually create a new map -- onClick, open that map
+    // could just cause the useEffect block to run again (using a state variable) 
+    // and then whenever it runs, check which map instance is active + add points
+  };
+
+  const toggleActiveMap = (mapId) => {
+    console.log("toggling active map to: " + mapId + ", idx: " + activeMapIdx);
+    setActiveMapId(mapId);
+    console.log("activeMapId: " + mapId);
+    clearAllMarkers();
+  };
+
 
 
   // Handler for "Add to Map" button click
@@ -619,6 +701,28 @@ function App() {
 
   return (
     <>
+      {/* Sidebar Toggle Button */}
+      <button className="sidebar-toggle" onClick={() => setShowSidebar(!showSidebar)}>☰</button>
+
+      {/* Sidebar */}
+      <div className={`sidebar ${showSidebar ? "visible" : "hidden"}`}>
+        <div className="sidebar-header">
+          <h3>Mapas</h3>
+          {/* <button className="add-map-btn" onClick={createNewMap}>+</button> */}
+        </div>
+        <ul>
+          {maps.map((map) => (
+            <li 
+              key={map.id} 
+              className={activeMapId === map.id ? "active" : ""}
+              onClick={() => toggleActiveMap(map.id)}
+              >
+                {map.name}
+            </li>
+          ))}
+        </ul>
+      </div>
+
       <div id='map-container' ref={mapContainerRef}/>
 
       {showForm && (

@@ -75,7 +75,7 @@
   font-family: 'Open Sans', sans-serif;
 }
 
-.sidebar {
+/* .sidebar {
   background-color: rgb(35 55 75 / 90%);
   color: #fff;
   padding: 6px 12px;
@@ -86,7 +86,7 @@
   left: 0;
   margin: 12px;
   border-radius: 4px;
-}
+} */
 
 .reset-button {
   position: absolute;
@@ -108,4 +108,76 @@
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+}
+
+.sidebar-toggle {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 1000;
+  border-radius: 4px;
+}
+
+.sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background: rgba(35, 55, 75, 0.9);
+  color: white;
+  padding: 55px 10px 10px;
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+  z-index: 999;
+}
+
+.sidebar.visible {
+  transform: translateX(0);
+}
+
+.sidebar h3 {
+  margin-top: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  padding: 8px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.sidebar li.active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-map-btn {
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.add-map-btn:hover {
+  background: #218838;
 }
