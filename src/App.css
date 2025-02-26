@@ -167,6 +167,11 @@
   align-items: center;
 }
 
+/* Ensure the Mapbox search bar is below the toolbar */
+.mapboxgl-ctrl-top-right {
+  top: 60px !important; /* Moves the search bar below the toolbar */
+}
+
 .add-map-btn {
   width: 30px;
   height: 30px;
@@ -180,4 +185,50 @@
 
 .add-map-btn:hover {
   background: #218838;
+}
+
+/* Toolbar styles */
+.toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #333;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+  z-index: 1000;
+}
+
+.toolbar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.toolbar li {
+  display: inline;
+}
+
+.toolbar a {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 8px 12px;
+  transition: background 0.3s ease;
+}
+
+.toolbar a:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+/* Page container */
+.page-container {
+  padding: 80px 20px; /* Ensure it doesn't overlap with the toolbar */
+  text-align: center;
 }

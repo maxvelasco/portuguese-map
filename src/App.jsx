@@ -1,3 +1,6 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Toolbar from "./components/Toolbar";
+import PlaceholderPage from "./pages/PlaceholderPage";
 import { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'; // used for Geocoding
@@ -701,6 +704,21 @@ function App() {
 
   return (
     <>
+      <Router>
+        <Toolbar />
+        <Routes>
+          {/* <Route path="/" element={<MapScreen />} /> */}
+          <Route path="/sobre" element={<PlaceholderPage title="Sobre o Projeto" />} />
+          <Route path="/intervencoes" element={<PlaceholderPage title="Intervenções Artísticas" />} />
+          <Route path="/podcasts" element={<PlaceholderPage title="Podcasts" />} />
+          <Route path="/entrevistas" element={<PlaceholderPage title="Entrevistas" />} />
+          <Route path="/video-ensaios" element={<PlaceholderPage title="Vídeo-ensaios" />} />
+          <Route path="/ensaios" element={<PlaceholderPage title="Ensaios" />} />
+          <Route path="/colaboradores" element={<PlaceholderPage title="Colaboradores" />} />
+          <Route path="/fale-conosco" element={<PlaceholderPage title="Fale Conosco" />} />
+        </Routes>
+      </Router>
+
       {/* Sidebar Toggle Button */}
       <button className="sidebar-toggle" onClick={() => setShowSidebar(!showSidebar)}>☰</button>
 
