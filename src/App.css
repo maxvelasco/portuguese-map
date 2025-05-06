@@ -112,12 +112,12 @@
 
 .sidebar-toggle {
   position: absolute;
-  top: 10px;
+  top: 0;
   left: 10px;
   background: #333;
   color: white;
   border: none;
-  padding: 8px 12px;
+  padding: 6px 12px;
   font-size: 20px;
   cursor: pointer;
   z-index: 1000;

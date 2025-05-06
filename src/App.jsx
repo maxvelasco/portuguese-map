@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Toolbar from "./components/Toolbar";
 import PlaceholderPage from "./pages/PlaceholderPage";
+import PdfPage from "./pages/PdfPageTemplate";
+import sobrePDF from "./docs/sobre-o-projeto.pdf";
 import { useRef, useEffect, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'; // used for Geocoding
@@ -189,7 +191,6 @@ const addMarkerWithPopupObject = (map, popup, markerType) => {
     markerElement.className = 'text-marker';
   }
 
-  // console.log("Adding NEW marker for: ", popup.title);
 
   const coordinatesKey = popup.coordinates.join(',');
   if (!markerGroups[coordinatesKey]) {
@@ -212,6 +213,8 @@ const addMarkerWithPopupObject = (map, popup, markerType) => {
   const markerCoords = popup.coordinates;
   const markerTitle = popup.title;
   const markerDescription = popup.description;
+
+  console.log("pushing marker with title: " + markerTitle);
 
   markers.push({ markerCoords, markerTitle, markerDescription });
   localStorage.setItem('markers', JSON.stringify(markers));  
@@ -480,7 +483,7 @@ function App() {
   const [showSidebar, setShowSidebar] = useState(false);
   // const [maps, setMaps] = useState([{ id: "map-1", name: "Default Map" }]);
   const [maps, setMaps] = useState([]);
-  const [activeMapId, setActiveMapId] = useState("map-1");
+  const [activeMapId, setActiveMapId] = useState(0); // useState("map-1");
   const [activeMapIdx, setActiveMapIdx] = useState(0); // Indexing the Excel sheet number
 
   const [selectedLocation, setSelectedLocation] = useState(null); // Stores selected location coordinates
@@ -553,7 +556,11 @@ function App() {
       clearAllMarkers();
       
       // add collections
-      addMap1Collection(mapRef.current);
+      if (activeMapId === 0) {
+        addMap1Collection(mapRef.current);
+      } 
+      // addMap1Collection(mapRef.current);
+      // TODO: add map collections based on data from relevant Excel sheet 
       
 
     });
@@ -650,6 +657,44 @@ function App() {
         // v2
         const jsonDataAsArray = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
         console.log('Parsed Data as Array:', jsonDataAsArray);
+        
+
+
+
+        const numRows = jsonData.length;
+        for (let i = 0; i < numRows; i++) {
+          let entry = jsonData[i];
+          const { id, type, title, description, coordinates, url, marker1, marker2, markerType } = jsonData[i];
+
+          if (type === 'marker') {
+            console.log("adding marker from excel with title:", title);
+            console.log("ID:", id, title, description);
+            console.log("Raw coordinates:", coordinates);
+
+
+            const url_var = url ? url : null;
+            const parsedCoords = typeof coordinates === 'string' ? JSON.parse(coordinates) : coordinates;
+            
+            const popup = createPopupObject({ title: title, description: description, coordinates: parsedCoords, url: url_var });
+            const markerKind = MARKER_TYPES[markerType] || MARKER_TYPES.video; // default to video marker if missing
+            addMarkerWithPopupObject(mapRef.current, popup, markerKind);
+
+            
+          } else if (type === 'connection') {
+            console.log("adding connection from excel with title:", title);
+
+            const popup = createPopupObject({ title: title, description: description });
+            const coords1 = typeof marker1_coords === 'string' ? JSON.parse(marker1_coords) : marker1_coords;
+            const coords2 = typeof marker2_coords === 'string' ? JSON.parse(marker2_coords) : marker2_coords;
+            addLineConnectionWithPopup(map, [coords1, coords2], popup);
+
+
+          } else {
+            console.error("Expected type of either 'marker' or 'connection' but got:", type);
+          }
+        }
+
+
 
         // jsonData now is an array of objects with your columns as keys
         setExcelData(jsonData);
@@ -709,6 +754,8 @@ function App() {
         <Routes>
           {/* <Route path="/" element={<MapScreen />} /> */}
           <Route path="/sobre" element={<PlaceholderPage title="Sobre o Projeto" />} />
+          {/* <Route path="/sobre" element={<PdfPage title="Sobre o Projeto" filePath="../docs/sobre-o-projeto.pdf" />} /> */}
+          {/* <Route path="/sobre" element={<PdfPage title="Sobre o Projeto" filePath={sobrePDF} />} /> */}
           <Route path="/intervencoes" element={<PlaceholderPage title="Intervenções Artísticas" />} />
           <Route path="/podcasts" element={<PlaceholderPage title="Podcasts" />} />
           <Route path="/entrevistas" element={<PlaceholderPage title="Entrevistas" />} />
